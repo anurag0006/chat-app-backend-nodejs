@@ -16,7 +16,6 @@ const UserSchema = mongoose.Schema({
     },
     picture: {
         type: String,
-        default: 'https://images.pexels.com/photos/4307693/pexels-photo-4307693.jpeg?auto=compress&cs=tinysrgb&w=800'
     }
 
 }, { timeStamps: true })
