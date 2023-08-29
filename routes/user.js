@@ -1,17 +1,28 @@
-var bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const User = require("../models/User")
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { protect } = require('../middleware/authMiddleware');
 const router = require("express").Router();
 
 
-router.get("/", (req, res) => {
+router.get("/", protect, async (req, res) => {
     try {
-        res.status(200).json("Hello world");
+        const keyword = req.query.search ? {
+            $or: [
+                { name: { $regex: req.query.search, $options: "i" } },
+                { email: { $regex: req.query.search, $options: "i" } },
+            ]
+        } : {}
+
+        const users = await User.find({ ...keyword, _id: { $ne: req.user._id } })
+        res.send(users);
+
     }
     catch (err) {
         res.status(500).json(err);
     }
 })
+
 router.post("/signup", async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.user.email });
